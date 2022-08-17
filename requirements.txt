@@ -1,0 +1,8 @@
+SQLAlchemy~=1.4.40
+alembic~=1.8.1
+uvicorn~=0.18.2
+fastapi~=0.79.0
+python-dotenv~=0.20.0
+pydantic~=1.9.2
+starlette~=0.19.1
+pandas~=1.4.3
