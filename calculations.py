@@ -29,13 +29,12 @@ def df_creator(json):
     arr = []
     used_arr = []
     for obj in json:
-        if obj.isim not in used_arr:
-            used_arr.append(obj.isim)
+        if str(obj.id)+obj.isim not in used_arr:
+            used_arr.append(str(obj.id) + obj.isim)
             arr.append(to_dict(obj))
     df = pd.DataFrame(arr)
     return df
 
-i = 0
 # Yasal çalışma saati sınırı
 maksimum_saat = 195
 
@@ -214,3 +213,19 @@ def average_puan(p_table):
         kisi_index += 1
         all_points.append(puan_hesabi(ana_kisi))
     return sum(all_points)/len(all_points)
+
+def switcher(uzmanDF, uzman_ids_list):
+    indexes = []
+    for switch_id in uzman_ids_list:
+        i=0
+        while i < len(uzmanDF):
+            if uzmanDF.iloc[i]["id"] == int(switch_id):
+                indexes.append(i)
+            i+=1
+    gy_cache = uzmanDF.loc[indexes[0], "sgk_il_isim"]
+    s_cache = uzmanDF.loc[indexes[0], "tehlike_sinifi"]
+    uzmanDF.loc[indexes[0], "sgk_il_isim"] = uzmanDF.loc[indexes[1], "sgk_il_isim"]
+    uzmanDF.loc[indexes[0], "tehlike_sinifi"] = uzmanDF.loc[indexes[1], "tehlike_sinifi"]
+    uzmanDF.loc[indexes[1], "sgk_il_isim"] = gy_cache
+    uzmanDF.loc[indexes[1], "tehlike_sinifi"] = s_cache
+    return uzmanDF

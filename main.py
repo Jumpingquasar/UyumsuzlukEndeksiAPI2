@@ -4,11 +4,12 @@ from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from starlette.responses import FileResponse
 from calculations import df_creator
+from calculations import switcher
 from calculations import yuzde_DF
 from calculations import matrix_summation
 from calculations import average_puan
 endeks = 0
-
+UzmanDF = {}
 from models import uzman_list as Model_uzman_list
 
 import os
@@ -33,23 +34,27 @@ async def uzman_list():
 @app.get("/matrixstartup/")
 async def matrixstartup():
     global endeks
-    # uzmanList = await uzman_list()
-    # df = df_creator(uzmanList)
+    global UzmanDF
+    uzmanList = await uzman_list()
+    UzmanDF = df_creator(uzmanList)
     # matrix = yuzde_DF(df)
     # endeks = matrix_summation(matrix)
     return "API başlatıldı. Bu pencereyi kapatabilirsiniz."
 
 @app.get("/switch_request/")
 async def switch_request_handler(uzman_ids):
-    uzman_ids_list = uzman_ids.split("+")
-    new_index = await UyumsuzlukEndeksi(uzman_ids_list)
-    return new_index
+    global UzmanDF
+    uzman_ids_list = uzman_ids.split(" ", 1)
+    uzmanList = await uzman_list()
+    UzmanDF = df_creator(uzmanList)
+    SwitchedUzmanDF = switcher(UzmanDF, uzman_ids_list)
+    average = average_puan(SwitchedUzmanDF)
+    return average
 
 @app.get("/ortalamaStart/")
 async def ortalamaStart():
-    uzmanList = await uzman_list()
-    df = df_creator(uzmanList)
-    average = average_puan(df)
+    global UzmanDF
+    average = average_puan(UzmanDF)
     return average
 
 @app.get("/UyumsuzlukEndeksi")
